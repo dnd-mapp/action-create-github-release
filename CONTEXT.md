@@ -5,7 +5,7 @@ A reusable composite GitHub Action that creates a GitHub Release (and its mirror
 ## Language
 
 **Release**:  
-The GitHub Release and its mirroring "Announcements" Discussion, created together in one `gh release create` call. Distinct from _tagging_, the calling workflow's act of pushing the `vX.Y.Z` tag that triggers this action, which this action has no part in.
+See the org-wide [Release Tooling context](https://github.com/dnd-mapp/.github/blob/main/docs/release-tooling/CONTEXT.md#language). This action creates one in a single `gh release create` call; it has no part in tagging, the calling workflow's act of pushing the `vX.Y.Z` tag that triggers it.
 
 **Asset**:  
 A file the caller supplies via the `assets` input (one path or glob pattern per line) that this action attaches to the Release. Excludes GitHub's own auto-generated "Source code (zip)/(tar.gz)" archives, which this action neither produces nor controls.
