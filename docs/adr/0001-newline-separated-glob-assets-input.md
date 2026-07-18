@@ -1,0 +1,9 @@
+# Accept release assets as a newline-separated list of glob patterns, fail loudly on zero matches
+
+This action's one configurable input, `assets`, exists to cover the one point where its two current consumers differ: `tsconfig` attaches a build tarball to its release, `action-setup-workspace` attaches nothing. The design session that spun this action out of the two originals ([action-setup-workspace ADR 0003](https://github.com/dnd-mapp/action-setup-workspace/blob/main/docs/adr/0003-extract-release-tooling-into-independent-actions.md)) left the exact shape of that input unresolved. We settled on: a newline-separated string, each line a literal path or a glob pattern (expanded by this action's own bash step, since `gh release create` does not expand globs itself), with each match attached as a separate asset. A line whose glob matches zero files fails the action rather than silently skipping it, since every asset described so far (tsconfig's tarball) is a build output that must exist, not an optional extra; a quietly-incomplete release is a worse failure mode than a red CI run.
+
+## Considered options
+
+- **A YAML list** (`assets: |` containing `- path/to/file`). Rejected: a composite/bash action would have to hand-parse YAML list syntax itself, with no YAML tool guaranteed on the runner, for no benefit over a plain newline split.
+- **A single glob pattern** (one string, no list at all). Rejected: covers tsconfig's current one-file case but doesn't generalize to a future consumer needing two unrelated files (e.g. a tarball and a checksum file) without contorting one glob to match both.
+- **Silently skip a zero-match line.** Rejected: nothing in either current consumer describes an asset as optional/best-effort; a silent skip would turn a broken build into a release that quietly ships without an expected file.
