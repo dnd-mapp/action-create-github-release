@@ -1,28 +1,37 @@
-# project-name
+# action-create-github-release
 
-[![Push to main](https://github.com/dnd-mapp/project-name/actions/workflows/push-main.yml/badge.svg)](https://github.com/dnd-mapp/project-name/actions/workflows/push-main.yml)
-[![License](https://img.shields.io/github/license/dnd-mapp/project-name)](LICENSE)
+[![Push to main](https://github.com/dnd-mapp/action-create-github-release/actions/workflows/push-main.yml/badge.svg)](https://github.com/dnd-mapp/action-create-github-release/actions/workflows/push-main.yml)
+[![License](https://img.shields.io/github/license/dnd-mapp/action-create-github-release)](LICENSE)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
-TODO: one-line description of this project.
+A composite GitHub Action that creates a GitHub Release and its mirroring "Announcements" Discussion, optionally attaching caller-supplied release assets.
 
-## Using this template
+## Usage
 
-This repo is a [GitHub template repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template): clicking **Use this template** copies these files as-is into a new repo, there is no variable substitution. After generating a new repo from it, go through this checklist:
+```yaml
+steps:
+    - name: Create GitHub release
+      uses: dnd-mapp/action-create-github-release@<SHA> # vX.Y.Z
+      with:
+          assets: |
+              dist/*.tgz
+```
 
-- [ ] Replace `project-name` everywhere (badges above, `package.json` `name`/`repository`/`homepage`/`bugs`, this heading) with the real repo name.
-- [ ] Fill in `package.json` `description` and this README's one-line description.
-- [ ] Set `package.json` `version` to wherever this project's versioning actually starts.
-- [ ] Drop `package.json` `private: true` only if this project will actually be published somewhere.
-- [ ] Configure branch protection (or a ruleset) on `main`: require pull requests, require the `Continuous Integration` status check from `pull-request.yml`, and set the merge method to **merge commits only** (disable squash and rebase merging in Settings → General → Pull Requests). The `commitlint` step in `pull-request.yml` is a CI backstop for the local Husky hook, not redundant with it, and it only stays meaningful if commits land in `main`'s history unmodified; squash/rebase merging defeats that. See [dnd-mapp/tsconfig's ADR 0001](https://github.com/dnd-mapp/tsconfig/blob/main/docs/adr/0001-commit-message-enforcement.md) for the full reasoning. This has to be set per repo, GitHub org-wide rulesets require GitHub Enterprise.
-- [ ] Delete this "Using this template" section once the checklist is done.
+### Inputs
 
-Depending on what this repo is actually for, add:
+| Name     | Description                                                                                                                                                             | Default |
+|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| `assets` | Newline-separated list of extra files to attach to the release. Each line may be a literal path or a glob pattern; a line whose glob matches no files fails the action. | `''`    |
 
-- **A publishable npm package**: reinstate a `release.yml` release workflow (see [dnd-mapp/tsconfig](https://github.com/dnd-mapp/tsconfig) for a working example that publishes to GitHub Package Registry), and drop `private: true` from `package.json`.
-- **A JavaScript/TypeScript GitHub Action**: add `typescript` and `@types/node` as devDependencies, a build step (e.g. [`@vercel/ncc`](https://github.com/vercel/ncc)) to bundle to `dist/`, an `action.yml` manifest at the repo root, and a release workflow that tags (and moves a major-version tag like `v1`).
-- **A composite (YAML-only) GitHub Action**: just add an `action.yml` manifest at the repo root, no other changes needed.
-- **An Angular, NestJS, or plain TypeScript/Node project**: add `typescript`, `@types/node`, and a `tsconfig.json` extending the matching [`@dnd-mapp/tsconfig`](https://github.com/dnd-mapp/tsconfig) preset.
+Omit `assets` (or leave it empty) to create a release with no attached files.
+
+### Requirements
+
+This action is zero-config beyond `assets`: it reads release notes from `.github/release-notes.md`, creates the release under the `"Announcements"` discussion category, and tags it `$GITHUB_REF_NAME`. None of that is configurable.
+
+The calling job needs `permissions: contents: write` and `permissions: discussions: write`; the built-in `${{ github.token }}` (used internally by this action) is sufficient, no separate token input is required.
+
+Pin to a commit SHA (not a floating tag) as shown above; the `# vX.Y.Z` comment is just a human-readable label of which release that SHA corresponds to. See [CHANGELOG.md](CHANGELOG.md) for release history, and the git tags for available versions (each release is tagged `vX.Y.Z`, with the `v1` tag floating to the latest `v1.x.y`).
 
 ## Contributing
 

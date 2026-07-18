@@ -1,0 +1,41 @@
+name: Create GitHub Release
+
+description: Create a GitHub Release and its mirroring "Announcements" Discussion
+
+inputs:
+    assets:
+        description: >
+            Newline-separated list of extra files to attach to the release. Each line may be a
+            literal path or a glob pattern; a line whose glob matches no files fails the action.
+        required: false
+        default: ''
+
+runs:
+    using: composite
+    steps:
+        - name: Create GitHub release
+          shell: bash
+          env:
+              GH_TOKEN: ${{ github.token }}
+              ASSETS_INPUT: ${{ inputs.assets }}
+          run: |
+              shopt -s nullglob
+
+              assetFiles=()
+
+              while IFS= read -r pattern; do
+                  [ -z "$pattern" ] && continue
+
+                  matches=($pattern)
+
+                  if [ "${#matches[@]}" -eq 0 ]; then
+                      echo "::error::No files matched asset pattern '$pattern'."
+                      exit 1
+                  fi
+                  assetFiles+=("${matches[@]}")
+              done <<< "$ASSETS_INPUT"
+
+              gh release create "$GITHUB_REF_NAME" \
+                  --notes-file .github/release-notes.md \
+                  --discussion-category "Announcements" \
+                  "${assetFiles[@]}"
