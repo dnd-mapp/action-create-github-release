@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-07-18
+
 ### Added
 
-- Composite GitHub Action that creates a GitHub Release and its mirroring "Announcements" Discussion, reading notes from `.github/release-notes.md` and tagging under the `"Announcements"` discussion category. Optional `assets` input: a newline-separated list of literal paths or glob patterns to attach as extra release files (see [ADR 0001](docs/adr/0001-newline-separated-glob-assets-input.md)).
+- Composite GitHub Action that creates a GitHub Release and its mirroring "Announcements" Discussion, reading notes from `.github/release-notes.md` and tagging under the `"Announcements"` discussion category. Optional `assets` input: a newline-separated list of literal paths or glob patterns to attach as extra release files (see [ADR 0001](docs/adr/0001-newline-separated-glob-assets-input.md)). Requires the calling job to grant `contents: write` and `discussions: write` permissions.
+
+[1.0.0]: https://github.com/dnd-mapp/action-create-github-release/releases/tag/v1.0.0
