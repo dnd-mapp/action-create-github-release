@@ -1,9 +1,15 @@
-# @dnd-mapp/project-template
+# @dnd-mapp/action-create-github-release
 
-Scaffold repo for new `dnd-mapp` repos (Angular apps, NestJS services, plain TypeScript/Node projects, and GitHub Actions), carrying the org's shared tooling and process conventions, not product code.
+A reusable composite GitHub Action that creates a GitHub Release (and its mirroring "Announcements" Discussion) for a pushed `vX.Y.Z` tag, optionally attaching caller-supplied release assets.
 
 ## Language
 
-**Template repository**:  
-GitHub's own feature (`Settings → Template repository`), which gives a repo a **Use this template** button. Clicking it copies the repo's current file tree into a new repo, as a plain, one-time file copy: no git history, and no variable substitution of any kind. Renaming placeholder values (package name, badge URLs, etc.) in a newly generated repo is a manual step, see the checklist in [README.md](README.md#using-this-template).  
-_Avoid_: "scaffolding tool" or "generator" for this mechanism, those imply prompt-driven variable substitution (e.g. Copier, Cookiecutter, Yeoman), which this repo deliberately does not use, see [ADR 0001](docs/adr/0001-github-native-template-repository.md).
+**Release**:  
+The GitHub Release and its mirroring "Announcements" Discussion, created together in one `gh release create` call. Distinct from _tagging_, the calling workflow's act of pushing the `vX.Y.Z` tag that triggers this action, which this action has no part in.
+
+**Asset**:  
+A file the caller supplies via the `assets` input (one path or glob pattern per line) that this action attaches to the Release. Excludes GitHub's own auto-generated "Source code (zip)/(tar.gz)" archives, which this action neither produces nor controls.
+
+**Release notes**:  
+The pre-written contents of `.github/release-notes.md`, passed to `gh release create --notes-file`. This action only reads that file at a hardcoded path; producing it is out of scope here (owned upstream, e.g. by `action-extract-release-notes`).  
+_Avoid_: "changelog" for this file specifically, the two may be related upstream, but this action doesn't know or care how the file was produced.
