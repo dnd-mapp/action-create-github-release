@@ -23,6 +23,8 @@ jobs:
               uses: dnd-mapp/action-validate-release-tag@cc07c1784188a50b4d1f931131bb14e480b2dd2a # v1.0.0
 
             - name: Check changelog section
+              env:
+                  RELEASED_VERSION: ${{ github.ref_name }}
               uses: dnd-mapp/action-extract-release-notes@2c44a78312de6d557ac11a76c316de06387824ee # v1.0.0
               with:
                   write-file: 'false'
@@ -50,6 +52,8 @@ jobs:
                   install-dependencies: 'false'
 
             - name: Prepare release notes
+              env:
+                  RELEASED_VERSION: ${{ github.ref_name }}
               uses: dnd-mapp/action-extract-release-notes@2c44a78312de6d557ac11a76c316de06387824ee # v1.0.0
 
             - name: Create GitHub release
